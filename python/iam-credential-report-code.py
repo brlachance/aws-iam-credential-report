@@ -19,8 +19,13 @@ s3 = boto3.resource('s3')
 bucketName = BUCKET_ARN.split(":", -1)[-1]
 bucketConnection = s3.Bucket(bucketName)
 
-listedAccounts = orgClient.list_accounts()
-
+listedAccounts = []
+index = 0
+for page in page_iterator:        
+    for account in page['Accounts']:
+        index = index + 1
+        print(f'Account retrireved {index}: {account}')
+        listedAccounts.append(account)
 
 failedAccounts = []
 
@@ -62,7 +67,13 @@ def assumeRole(accountId):
         pass
 
 def lambda_handler(event, context):
-    for account in listedAccounts['Accounts']:
+    index = 0
+    for account in listedAccounts:       
+        index = index + 1
+        print(f'Account scanned {index} : {account}')
         if account['Status'] != 'SUSPENDED':
             assumeRole(account['Id'])
+        else:
+            print(f'Suspended Account skipped {index} : {account}')
+
     return("Completed! Failed Accounts: ", failedAccounts)
