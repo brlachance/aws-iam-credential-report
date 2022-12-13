@@ -19,6 +19,9 @@ s3 = boto3.resource('s3')
 bucketName = BUCKET_ARN.split(":", -1)[-1]
 bucketConnection = s3.Bucket(bucketName)
 
+paginator = orgClient.get_paginator('list_accounts')
+page_iterator = paginator.paginate()
+
 listedAccounts = []
 index = 0
 for page in page_iterator:        
